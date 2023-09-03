@@ -4,7 +4,7 @@ library used to be a part of Stilt Fox&trade; universal library, however was spl
 This Library won't be updated often as well, reading a file doesn't change often. So unless a bug is discovered, or new functionality
 is required, this library should stay rather static.
 
-## Notice
+## Legal Stuff
 Stilt Fox&trade; is not liable for any damages done to your hardware. For more information see LICENSE file.\
 Stilt Fox&trade; is trademarked. You may not use the Stilt Fox™ name, however this code is free to reference and use.\
 You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&trade; owns the copyright for any contributions.
