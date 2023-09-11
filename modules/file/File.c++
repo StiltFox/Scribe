@@ -5,6 +5,10 @@
 #include <unistd.h>
 #include <cstring>
 #include <utility>
+#ifdef WIN32
+#include <locale>
+#include <codecvt>
+#endif
 #include "File.h++"
 
 using namespace StiltFox::Scribe;
@@ -46,6 +50,28 @@ unordered_set<string> File::list()
     return list(nullptr);
 }
 
+#ifdef WIN32
+unordered_set<string> File::list(const function<void(const string&)>& performOnEach)
+{
+    unordered_set<string> output;
+
+    if (exists())
+    {
+        output.insert(path);
+        for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+        {
+            using convert_type = std::codecvt_utf8<wchar_t>;
+            std::wstring_convert<convert_type, wchar_t> converter;
+
+            string dirPath = converter.to_bytes(dir_entry.path().native());
+            if (performOnEach != nullptr) performOnEach(dirPath);
+            output.insert(dirPath);
+        }
+    }
+
+    return output;
+}
+#else
 unordered_set<string> File::list(const function<void(const string&)>& performOnEach)
 {
     unordered_set<string> output;
@@ -62,6 +88,7 @@ unordered_set<string> File::list(const function<void(const string&)>& performOnE
 
     return output;
 }
+#endif
 
 void File::createParentPath()
 {
