@@ -30,7 +30,27 @@ command.
 >cmake .. -DSFSkipTesting=true -DCMAKE_BUILD_TYPE=Release\
 >cmake --build .\
 >cmake --install .\
->cd .
+>cd .j
+
+## Cross Compiling For Windows
+Because this project was made primarily for Linux based systems, getting the libraries running on windows can be tricky. Several configurations need to be made that Linux simply does not need.
+
+### Prerequisites
+- CMake
+  - version 3.0.0 or greater
+- C++ compiler
+  - must support C++ version 20 or higher
+  - must be mingw using a posix threading system
+    - example: `x86_64-w64-mingw32-g++-posix`
+
+### Setup
+#### Compiler and Toolchain
+The first order of business should be getting your compiler and toolchain up and running. To make this happen you first need to install the mingw compiler onto your computer.\
+`sudo apt install g++-mingw-w64 gcc-mingw-w64` \
+#### Installing GTest for Windows
+Because we are running on Linux, by default only the Linux binaries for the GTest library are available on the repo and we will have to compile the GTest library from scratch. \
+1. clone GTest from the github repo [here](https://github.com/google/googletest)
+2. copy the toolchain file from [toolchains/windows.toolchain](toolchains)
 
 ## Linking to Stilt Fox&trade; Scribe
 Linking to Stilt Fox&trade; scribe is easy. In your CMakeLists.txt file include the following line:\

@@ -8,14 +8,7 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 if(NOT SFSkipTesting)
-    include(FetchContent)
-    FetchContent_Declare(
-            googletest
-            URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
-            DOWNLOAD_EXTRACT_TIMESTAMP true
-    )
-
-    FetchContent_MakeAvailable(googletest)
+    find_package(GTest REQUIRED)
     include(GoogleTest)
     enable_testing()
     add_subdirectory(test)
