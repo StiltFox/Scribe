@@ -25,12 +25,14 @@ You may contribute to this library, however all contributions will share the sam
 The following commands will install the libraries to your system. These will exist globally to all users. If you wish to
 install for a single user, please adjust accordingly. Also, you will require sudo privileges to run the `cmake --install .`
 command.
->mkdir build\
->cd build\
->cmake .. -DSFSkipTesting=true -DCMAKE_BUILD_TYPE=Release\
->cmake --build .\
->cmake --install .\
->cd .j
+``` bash
+mkdir build
+cd build
+cmake -DSFSkipTesting=true -DCMAKE_BUILD_TYPE=Release .. 
+cmake --build .
+cmake --install .
+cd .j
+```
 
 ## Cross Compiling For Windows
 Because this project was made primarily for Linux based systems, getting the libraries running on windows can be tricky. Several configurations need to be made that Linux simply does not need.
@@ -45,12 +47,35 @@ Because this project was made primarily for Linux based systems, getting the lib
 
 ### Setup
 #### Compiler and Toolchain
-The first order of business should be getting your compiler and toolchain up and running. To make this happen you first need to install the mingw compiler onto your computer.\
-`sudo apt install g++-mingw-w64 gcc-mingw-w64` \
+The first order of business should be getting your compiler and toolchain up and running. To make this happen you first need to install the mingw compiler onto your computer and ninja build.\
+`sudo apt install g++-mingw-w64 gcc-mingw-w64 ninja-build` 
+
 #### Installing GTest for Windows
 Because we are running on Linux, by default only the Linux binaries for the GTest library are available on the repo and we will have to compile the GTest library from scratch. \
 1. clone GTest from the github repo [here](https://github.com/google/googletest)
-2. copy the toolchain file from [toolchains/windows.toolchain](toolchains)
+2. copy the toolchain file from [toolchains/windows.toolchain](toolchains) into the GTest directory.
+3. do the following CMake commands:
+``` bash
+ mkdir build
+ cd build
+ rm -rf * #careful this is dangerous!
+ cmake -DCMAKE_TOOLCHAIN_FILE=windows.toolchain -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ ..
+ cmake --build .
+ cmake --install .
+ ```
+#### Compiling and Installing Stilt Fox&trade; Scribe for Windows
+```bash
+mkdir build
+cd build
+rm -rf * # DANGER be sure you are in the build directory
+# Here we will compile the whole project tests and all.
+# If you just wish to install the library without running the tests
+# you can specify the -DSFSkipTesting=true option. Just like
+# in the Linux build.
+cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/windows.toolchain -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
+cmake --install .
+```
 
 ## Linking to Stilt Fox&trade; Scribe
 Linking to Stilt Fox&trade; scribe is easy. In your CMakeLists.txt file include the following line:\
