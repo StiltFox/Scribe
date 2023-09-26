@@ -5,6 +5,10 @@
 #include <unistd.h>
 #include <cstring>
 #include <utility>
+#ifdef WIN32
+#include <locale>
+#include <codecvt>
+#endif
 #include "File.h++"
 
 using namespace StiltFox::Scribe;
@@ -46,6 +50,89 @@ unordered_set<string> File::list()
     return list(nullptr);
 }
 
+#ifdef WIN32
+unordered_set<string> File::list(const function<void(const string&)>& performOnEach)
+{
+    unordered_set<string> output;
+
+    if (exists())
+    {
+        output.insert(path);
+        for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+        {
+            using convert_type = std::codecvt_utf8<wchar_t>;
+            std::wstring_convert<convert_type, wchar_t> converter;
+
+            string dirPath = converter.to_bytes(dir_entry.path().native());
+            if (performOnEach != nullptr) performOnEach(dirPath);
+            output.insert(dirPath);
+        }
+    }
+
+    return output;
+}
+
+bool File::canWrite()
+{
+    return true;
+}
+
+bool File::canRead()
+{
+    return true;
+}
+
+bool File::canExecute()
+{
+    return true;
+}
+
+bool File::remove()
+{
+    try
+    {
+        filesystem::remove_all(path);
+    }
+    catch(...)
+    {
+        //do nothing but ignore the access denied message
+    }
+    return !exists();
+}
+
+bool File::copy(const string& copyTo)
+{
+    File dest = copyTo;
+    bool canCopy = exists() && canRead() && dest.canWrite();
+    if(canCopy)
+    {
+        filesystem::remove_all(copyTo);
+        if (isDirectory())
+        {
+            canCopy &= dest.mkdir();
+            for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+            {
+                string currentPath = dir_entry.path().string();
+                string destPath = copyTo + currentPath.substr(currentPath.find_first_of(filesystem::path::preferred_separator));
+                if (dir_entry.is_directory())
+                {
+                    filesystem::create_directories(destPath);
+                }
+                else
+                {
+                    filesystem::copy_file(currentPath, destPath,filesystem::copy_options::overwrite_existing);
+                }
+            }
+        }
+        else
+        {
+            filesystem::copy_file(path, copyTo, filesystem::copy_options::overwrite_existing);
+        }
+    }
+    return canCopy && filesystem::exists(copyTo);
+}
+#else
+
 unordered_set<string> File::list(const function<void(const string&)>& performOnEach)
 {
     unordered_set<string> output;
@@ -63,12 +150,6 @@ unordered_set<string> File::list(const function<void(const string&)>& performOnE
     return output;
 }
 
-void File::createParentPath()
-{
-    filesystem::path pth(path.c_str());
-    if (pth.has_parent_path()) filesystem::create_directories(pth.parent_path().c_str());
-}
-
 bool File::canWrite()
 {
     return access(path.c_str(), W_OK) == 0 || errno != EACCES;
@@ -82,6 +163,50 @@ bool File::canRead()
 bool File::canExecute()
 {
     return access(path.c_str(), X_OK) == 0 || errno != EACCES && errno != ENOENT;
+}
+
+bool File::remove()
+{
+    if (exists() && canWrite()) filesystem::remove_all(path);
+    return !exists();
+}
+
+bool File::copy(const string& copyTo)
+{
+    File dest = copyTo;
+    bool canCopy = exists() && canRead() && dest.canWrite();
+    if(canCopy)
+    {
+        if (isDirectory())
+        {
+            canCopy &= dest.mkdir();
+            for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+            {
+                string currentPath = dir_entry.path().string();
+                string destPath = copyTo + currentPath.substr(currentPath.find_first_of(filesystem::path::preferred_separator));
+                if (dir_entry.is_directory())
+                {
+                    filesystem::create_directories(destPath);
+                }
+                else
+                {
+                    filesystem::copy_file(currentPath, destPath,filesystem::copy_options::overwrite_existing);
+                }
+            }
+        }
+        else
+        {
+            filesystem::copy_file(path, copyTo, filesystem::copy_options::overwrite_existing);
+        }
+    }
+    return canCopy && filesystem::exists(copyTo);
+}
+#endif
+
+void File::createParentPath()
+{
+    filesystem::path pth(path.c_str());
+    if (pth.has_parent_path()) filesystem::create_directories(pth.parent_path().c_str());
 }
 
 bool File::exists()
@@ -105,12 +230,6 @@ bool File::mkdir()
 {
     if (canWrite() && !exists()) filesystem::create_directories(path);
     return exists() && isDirectory();
-}
-
-bool File::remove()
-{
-    if (exists() && canWrite()) filesystem::remove_all(path);
-    return !exists();
 }
 
 bool File::isDirectory()
@@ -149,37 +268,6 @@ int File::getSize()
     }
 
     return output;
-}
-
-bool File::copy(const string& copyTo)
-{
-    File dest = copyTo;
-    bool canCopy = canRead() && dest.canWrite();
-    if(canCopy)
-    {
-        if (isDirectory())
-        {
-            canCopy &= dest.mkdir();
-            for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
-            {
-                string currentPath = dir_entry.path().string();
-                string destPath = copyTo + currentPath.substr(currentPath.find_first_of(filesystem::path::preferred_separator));
-                if (dir_entry.is_directory())
-                {
-                    filesystem::create_directories(destPath);
-                }
-                else
-                {
-                    filesystem::copy_file(currentPath, destPath,filesystem::copy_options::overwrite_existing);
-                }
-            }
-        }
-        else
-        {
-            filesystem::copy_file(path, copyTo, filesystem::copy_options::overwrite_existing);
-        }
-    }
-    return canCopy && filesystem::exists(copyTo);
 }
 
 bool File::write(const string& toWrite)
