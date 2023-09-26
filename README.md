@@ -31,7 +31,7 @@ cd build
 cmake -DSFSkipTesting=true -DCMAKE_BUILD_TYPE=Release .. 
 cmake --build .
 cmake --install .
-cd .j
+cd ..
 ```
 
 ## Cross Compiling For Windows
