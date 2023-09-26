@@ -4,13 +4,19 @@
 #include <sys/stat.h>
 #include "File.h++"
 
+#ifdef WIN32
+    #define fileSeparator "\\"
+#else
+    #define fileSeparator "/"
+#endif
+
 using namespace StiltFox::Scribe;
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////File canWrite tests////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#ifndef WIN32
 TEST(File, canWrite_will_return_true_if_we_can_write_to_the_File)
 {
     //given we have a file that we have write permissions to
@@ -22,7 +28,7 @@ TEST(File, canWrite_will_return_true_if_we_can_write_to_the_File)
     bool actual = file.canWrite();
 
     //then we get back that we can write
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_canWrite_good_File");
 }
 
@@ -35,7 +41,7 @@ TEST(File, canWrite_will_return_true_on_a_path_that_is_writable_but_the_file_doe
     bool actual = file.canWrite();
 
     //then we get back that we can write
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
 }
 
 TEST(File, canWrite_will_return_false_on_a_file_with_bad_permissions)
@@ -43,15 +49,16 @@ TEST(File, canWrite_will_return_false_on_a_file_with_bad_permissions)
     //given we have a file with bad permissions
     ofstream badFile(".FileOps_canWrite_bad_File");
     badFile.close();
-    chmod(".FileOps_canWrite_bad_File", 0x000);
+    filesystem::permissions(".FileOps_canWrite_bad_File", filesystem::perms::none, filesystem::perm_options::replace);
+    
     File file = ".FileOps_canWrite_bad_File";
 
     //when we get write permissions
     bool actual = file.canWrite();
 
     //then we get back that we cannot write
-    ASSERT_FALSE(actual);
-    chmod(".FileOps_canWrite_bad_File", 0x777);
+    EXPECT_FALSE(actual);
+    filesystem::permissions(".FileOps_canWrite_bad_File", filesystem::perms::all, filesystem::perm_options::replace);
     filesystem::remove_all(".FileOps_canWrite_bad_File");
 }
 
@@ -80,9 +87,9 @@ TEST(File, canWrite_will_not_create_a_file)
     file.canWrite();
 
     //then the file is not created
-    ASSERT_FALSE(filesystem::exists(".FileOps_canWrite_non_existing_file"));
+    EXPECT_FALSE(filesystem::exists(".FileOps_canWrite_non_existing_file"));
 }
-
+#endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +97,7 @@ TEST(File, canWrite_will_not_create_a_file)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////File canRead tests/////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#ifndef WIN32
 TEST(File, canRead_will_return_true_if_we_can_read_the_File)
 {
     //given we have a file that we have read permissions to
@@ -102,7 +109,7 @@ TEST(File, canRead_will_return_true_if_we_can_read_the_File)
     bool actual = file.canRead();
 
     //then we get back that we can read
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_canRead_good_File");
 }
 
@@ -115,7 +122,7 @@ TEST(File, canRead_will_return_false_on_a_path_that_does_not_exist)
     bool actual = file.canRead();
 
     //then we get back that we cannot read
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
 }
 
 TEST(File, canRead_will_return_false_on_a_file_with_bad_permissions)
@@ -130,7 +137,7 @@ TEST(File, canRead_will_return_false_on_a_file_with_bad_permissions)
     bool actual = file.canRead();
 
     //then we get back that we cannot read
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     chmod(".FileOps_canRead_bad_File", 0x777);
     filesystem::remove_all(".FileOps_canRead_bad_File");
 }
@@ -144,9 +151,9 @@ TEST(File, canRead_will_not_create_a_file)
     file.canRead();
 
     //then the file is not created
-    ASSERT_FALSE(filesystem::exists(".FileOps_canRead_non_existing_file"));
+    EXPECT_FALSE(filesystem::exists(".FileOps_canRead_non_existing_file"));
 }
-
+#endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +161,7 @@ TEST(File, canRead_will_not_create_a_file)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////File canExecute tests///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#ifndef WIN32
 TEST(File, canExecute_will_return_true_if_we_can_execute_the_File)
 {
     //given we have a file that we have execute permissions to
@@ -167,7 +174,7 @@ TEST(File, canExecute_will_return_true_if_we_can_execute_the_File)
     bool actual = file.canExecute();
 
     //then we get back that we can execute
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_canExecute_good_File");
 }
 
@@ -180,7 +187,7 @@ TEST(File, canExecute_will_return_false_on_a_path_that_does_not_exist)
     bool actual = file.canExecute();
 
     //then we get back that we cannot execute
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
 }
 
 TEST(File, canExecute_will_return_false_on_a_file_with_bad_permissions)
@@ -195,7 +202,7 @@ TEST(File, canExecute_will_return_false_on_a_file_with_bad_permissions)
     bool actual = file.canExecute();
 
     //then we get back that we cannot execute
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     chmod(".FileOps_canExecute_bad_File", 0x777);
     filesystem::remove_all(".FileOps_canExecute_bad_File");
 }
@@ -209,9 +216,9 @@ TEST(File, canExecute_will_not_create_a_file)
     file.canExecute();
 
     //then the file is not created
-    ASSERT_FALSE(filesystem::exists(".FileOps_canExecute_non_existing_file"));
+    EXPECT_FALSE(filesystem::exists(".FileOps_canExecute_non_existing_file"));
 }
-
+#endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +238,7 @@ TEST (File, exists_returns_true_when_the_referenced_file_exists)
     bool actual = file.exists();
 
     //then we get back true
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_Exists_01");
 }
 
@@ -244,9 +251,10 @@ TEST(File, exists_returns_false_when_the_referenced_file_does_not_exist)
     bool actual = file.exists();
 
     //then we get back that the file does not exist
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
 }
 
+#ifndef WIN32
 TEST(File, exists_returns_false_if_we_do_not_have_read_permissions_to_a_file)
 {
     //given we have a file that we cannot read
@@ -263,6 +271,7 @@ TEST(File, exists_returns_false_if_we_do_not_have_read_permissions_to_a_file)
     chmod(".FileOps_exists_badFile", 0x777);
     filesystem::remove_all(".FileOps_exists_badFile");
 }
+#endif
 
 TEST(File, exists_will_not_create_a_file)
 {
@@ -273,7 +282,7 @@ TEST(File, exists_will_not_create_a_file)
     file.exists();
 
     //then the file is not created
-    ASSERT_FALSE(filesystem::exists(".FileOps_exists_non_existing_file01"));
+    EXPECT_FALSE(filesystem::exists(".FileOps_exists_non_existing_file01"));
 }
 
 TEST(File, exists_will_return_true_For_a_directory)
@@ -286,7 +295,7 @@ TEST(File, exists_will_return_true_For_a_directory)
     bool actual = file.exists();
 
     //then we get back true
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_exists_directory");
 }
 
@@ -307,13 +316,14 @@ TEST (File, touch_will_create_blank_file)
     bool actual = file.touch();
 
     //then we get an empty file
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_touch_01"));
-    ASSERT_TRUE(filesystem::is_regular_file(".FileOps_touch_01"));
-    ASSERT_EQ(filesystem::file_size(".FileOps_touch_01"), 0);
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_touch_01"));
+    EXPECT_TRUE(filesystem::is_regular_file(".FileOps_touch_01"));
+    EXPECT_EQ(filesystem::file_size(".FileOps_touch_01"), 0);
     filesystem::remove_all(".FileOps_touch_01");
 }
 
+#ifndef WIN32
 TEST(File, touch_will_return_false_if_writing_is_not_possible)
 {
     //given we have a folder without read permissions
@@ -326,10 +336,11 @@ TEST(File, touch_will_return_false_if_writing_is_not_possible)
 
     //then we do not create the file and return false
     chmod(".FileOps_touch_bad_permissions", 0x777);
-    ASSERT_FALSE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_touch_bad_permissions/badTouch"));
+    EXPECT_FALSE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_touch_bad_permissions/badTouch"));
     filesystem::remove_all(".FileOps_touch_bad_permissions");
 }
+#endif
 
 TEST(File, touch_will_return_true_and_not_modify_the_contents_of_an_existing_file)
 {
@@ -343,8 +354,8 @@ TEST(File, touch_will_return_true_and_not_modify_the_contents_of_an_existing_fil
     bool actual = file.touch();
 
     //then we return true and do not edit the file
-    ASSERT_TRUE(actual);
-    ASSERT_EQ(file.read(), "here's some data");
+    EXPECT_TRUE(actual);
+    EXPECT_EQ(file.read(), "here's some data");
     filesystem::remove_all(".FileOps_touch_existing");
 }
 
@@ -357,8 +368,8 @@ TEST(File, touch_will_create_required_directories)
     bool actual = file.touch();
 
     //then we return true and create the file
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_touch_dir1/ab/bf/test.txt"));
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_touch_dir1/ab/bf/test.txt"));
     filesystem::remove_all(".FileOps_touch_dir1");
 }
 
@@ -372,8 +383,8 @@ TEST(File, touch_will_crate_a_file_in_an_existng_directory)
     bool actual = file.touch();
 
     //then we create the file and return true
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_touch_dir2/temp/test.txt"));
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_touch_dir2/temp/test.txt"));
     filesystem::remove_all(".FileOps_touch_dir2");
 }
 
@@ -387,7 +398,7 @@ TEST(File, touch_will_return_false_if_touched_file_is_a_directory)
     bool actual = file.touch();
 
     //then we get back false
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     filesystem::remove_all(".FileOps_touch_dir3");
 }
 
@@ -408,12 +419,13 @@ TEST(File, mkdir_will_create_a_directory)
     bool actual = file.mkdir();
 
     //then we get back true and the directory is created
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_mkdir_new_dir"));
-    ASSERT_TRUE(filesystem::is_directory(".FileOps_mkdir_new_dir"));
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_mkdir_new_dir"));
+    EXPECT_TRUE(filesystem::is_directory(".FileOps_mkdir_new_dir"));
     filesystem::remove_all(".FileOps_mkdir_new_dir");
 }
 
+#ifndef WIN32
 TEST(File, mkdir_will_return_false_if_requested_path_is_unwriteable)
 {
     //given we have a path for a directory with no permissions
@@ -426,10 +438,11 @@ TEST(File, mkdir_will_return_false_if_requested_path_is_unwriteable)
 
     //then we get back false and the directory does not exist
     chmod(".FileOps_mkdir_bad_perms", 0x777);
-    ASSERT_FALSE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_mkdir_bad_perms/test"));
+    EXPECT_FALSE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_mkdir_bad_perms/test"));
     filesystem::remove_all(".FileOps_mkdir_bad_perms");
 }
+#endif
 
 TEST(File, mkdir_will_return_false_if_the_file_is_a_regular_file_and_not_edit_it)
 {
@@ -443,9 +456,9 @@ TEST(File, mkdir_will_return_false_if_the_file_is_a_regular_file_and_not_edit_it
     bool actual = file.mkdir();
 
     //then we do not alter the file and return false
-    ASSERT_FALSE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_mkdir_regular_file"));
-    ASSERT_EQ(file.read(), "values");
+    EXPECT_FALSE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_mkdir_regular_file"));
+    EXPECT_EQ(file.read(), "values");
     filesystem::remove_all(".FileOps_mkdir_regular_file");
 }
 
@@ -459,7 +472,7 @@ TEST(File, mkdir_will_return_true_if_the_directory_already_exists)
     bool actual = file.mkdir();
 
     //then we get back true
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_mkdir_already_existing");
 }
 
@@ -472,8 +485,8 @@ TEST(File, mkdir_will_create_all_needed_directories)
     bool actual = file.mkdir();
 
     //then we get back true and the directories are made
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_mkdir_multi/directories/path"));
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_mkdir_multi/directories/path"));
     filesystem::remove_all(".FileOps_mkdir_multi");
 }
 
@@ -496,10 +509,11 @@ TEST(File, remove_will_delete_the_file_from_the_system)
     bool actual = file.remove();
 
     //then we get back true and the file is removed
-    ASSERT_TRUE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_remove_deletable_file"));
+    EXPECT_TRUE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_remove_deletable_file"));
 }
 
+#ifndef WIN32
 TEST(File, remove_will_return_false_and_not_remove_the_file_if_permissions_are_not_granted)
 {
     //given we have an existing file with bad permissions
@@ -517,6 +531,7 @@ TEST(File, remove_will_return_false_and_not_remove_the_file_if_permissions_are_n
     ASSERT_TRUE(filesystem::exists(".FileOps_remove_bad_permissions"));
     filesystem::remove_all(".FileOps_remove_bad_permissions");
 }
+#endif
 
 TEST(File, remove_will_delete_a_folder_with_things_in_it)
 {
@@ -528,8 +543,8 @@ TEST(File, remove_will_delete_a_folder_with_things_in_it)
     bool actual = file.remove();
 
     //then we get back true and everything is removed
-    ASSERT_TRUE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_remove_multi"));
+    EXPECT_TRUE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_remove_multi"));
 }
 
 TEST(File, remove_will_return_true_if_the_file_does_not_exist)
@@ -541,7 +556,7 @@ TEST(File, remove_will_return_true_if_the_file_does_not_exist)
     bool actual = file.remove();
 
     //then we get back that the file is removed
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -562,7 +577,7 @@ TEST(File, isDirectory_will_return_true_if_the_file_is_a_directory)
     bool actual = file.isDirectory();
 
     //then we get back that the file is a directory
-    ASSERT_TRUE(actual);
+    EXPECT_TRUE(actual);
     filesystem::remove_all(".FileOps_isDirectory_directory");
 }
 
@@ -577,10 +592,11 @@ TEST(File, isDirectory_will_return_false_if_the_file_is_not_a_directory)
     bool actual = file.isDirectory();
 
     //then we get back that the file is not a directory
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     filesystem::remove_all(".FileOps_isDirectory_regular_file");
 }
 
+#ifndef WIN32
 TEST(File, isDirectory_will_return_false_if_we_dont_have_read_permissions)
 {
     //given we have a folder with bad permissions
@@ -593,9 +609,10 @@ TEST(File, isDirectory_will_return_false_if_we_dont_have_read_permissions)
 
     //then we get back false
     chmod(".FileOps_isDirectory_bad_permissions", 0x777);
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     filesystem::remove_all(".FileOps_isDirectory_bad_permissions");
 }
+#endif
 
 TEST(File, isDirectory_will_return_false_if_the_file_does_not_exist)
 {
@@ -606,8 +623,8 @@ TEST(File, isDirectory_will_return_false_if_the_file_does_not_exist)
     bool actual = file.isDirectory();
 
     //we get back that the file is not a directory, and we do not create it
-    ASSERT_FALSE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_isDirectory_does_not_exist"));
+    EXPECT_FALSE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_isDirectory_does_not_exist"));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -627,7 +644,7 @@ TEST(File, getSize_will_return_negative_one_when_file_does_not_exist)
     int size = file.getSize();
 
     //then we get back an error size
-    ASSERT_EQ(size, -1);
+    EXPECT_EQ(size, -1);
 }
 
 TEST(File, getFileSize_will_not_create_a_File)
@@ -639,9 +656,10 @@ TEST(File, getFileSize_will_not_create_a_File)
     file.getSize();
     
     //then we do not create the file
-    ASSERT_FALSE(filesystem::exists(".FileOps_getSize_does_not_exist01"));
+    EXPECT_FALSE(filesystem::exists(".FileOps_getSize_does_not_exist01"));
 }
 
+#ifndef WIN32
 TEST(File, getSize_will_return_negative_if_we_do_not_have_permissions)
 {
     // given we have a file with bad permissions
@@ -655,9 +673,10 @@ TEST(File, getSize_will_return_negative_if_we_do_not_have_permissions)
 
     //then we get back an error size
     chmod(".FileOps_getSize_bad_permissions", 0x777);
-    ASSERT_EQ(actual, -1);
+    EXPECT_EQ(actual, -1);
     filesystem::remove_all(".FileOps_getSize_bad_permissions");
 }
+#endif
 
 TEST(File, getSize_will_return_the_size_of_a_file)
 {
@@ -680,9 +699,9 @@ TEST(File, getSize_will_return_the_size_of_a_file)
     int actual2 = f2.getSize();
 
     //then we get back the correct file sizes
-    ASSERT_EQ(actual0, 24);
-    ASSERT_EQ(actual1, 0);
-    ASSERT_EQ(actual2, 7);
+    EXPECT_EQ(actual0, 24);
+    EXPECT_EQ(actual1, 0);
+    EXPECT_EQ(actual2, 7);
     filesystem::remove_all(".FileOps_getSize_size_00");
     filesystem::remove_all(".FileOps_getSize_size_01");
     filesystem::remove_all(".FileOps_getSize_size_02");
@@ -714,7 +733,7 @@ TEST(File, getSize_will_return_the_size_of_the_contents_of_a_directory_recursivl
     int actual = file.getSize();
 
     //then we get back the size of all the folder's contents
-    ASSERT_EQ(actual, 59);
+    EXPECT_EQ(actual, 59);
     filesystem::remove_all(".FileOps_getSize_folder");
 }
 
@@ -738,11 +757,11 @@ TEST(File, copy_will_create_a_file_if_destination_does_not_exist)
     bool actual = file.copy(".FileOps_copy_dest00");
 
     //then we get back true and the file is copied
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_source00"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_dest00"));
-    ASSERT_EQ(file.read(),"I was stuck staring into the unknown. the inky black.");
-    ASSERT_EQ(((File)".FileOps_copy_dest00").read(), "I was stuck staring into the unknown. the inky black.");
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_source00"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_dest00"));
+    EXPECT_EQ(file.read(),"I was stuck staring into the unknown. the inky black.");
+    EXPECT_EQ(((File)".FileOps_copy_dest00").read(), "I was stuck staring into the unknown. the inky black.");
     filesystem::remove_all(".FileOps_copy_source00");
     filesystem::remove_all(".FileOps_copy_dest00");
 
@@ -763,15 +782,16 @@ TEST(File, copy_will_replace_the_contents_of_an_existing_file)
     bool actual = file.copy(".FileOps_copy_dest01");
 
     //then we get back true and the contents is copied over the old
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_source01"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_dest01"));
-    ASSERT_EQ(file.read(),"Secure, contain, protect");
-    ASSERT_EQ(((File)".FileOps_copy_dest01").read(), "Secure, contain, protect");
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_source01"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_dest01"));
+    EXPECT_EQ(file.read(),"Secure, contain, protect");
+    EXPECT_EQ(((File)".FileOps_copy_dest01").read(), "Secure, contain, protect");
     filesystem::remove_all(".FileOps_copy_source01");
     filesystem::remove_all(".FileOps_copy_dest01");
 }
 
+#ifndef WIN32
 TEST(File, copy_file_will_return_false_and_do_nothing_if_source_file_cannot_be_read)
 {
     //given we have a source file without read permissions
@@ -786,8 +806,8 @@ TEST(File, copy_file_will_return_false_and_do_nothing_if_source_file_cannot_be_r
 
     //then the file is not copied and we return false
     chmod(".FileOps_copy_source_bad", 0x777);
-    ASSERT_FALSE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_copy_dest_bad"));
+    EXPECT_FALSE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_copy_dest_bad"));
     filesystem::remove_all(".FileOps_copy_source_bad");
 }
 
@@ -808,11 +828,12 @@ TEST(File, copy_file_will_return_false_and_do_nothing_if_the_destination_cannot_
 
     //then we get back false and nothing is changed
     chmod(".FileOps_copy_source02", 0x777);
-    ASSERT_FALSE(actual);
-    ASSERT_EQ(((File)".FileOps_copy_dest_bad01").read(), "requires 05 clearance");
+    EXPECT_FALSE(actual);
+    EXPECT_EQ(((File)".FileOps_copy_dest_bad01").read(), "requires 05 clearance");
     filesystem::remove_all(".FileOps_copy_dest_bad01");
     filesystem::remove_all(".FileOps_copy_source02");
 }
+#endif
 
 TEST(File, copy_will_return_false_and_do_nothing_if_source_does_not_exist)
 {
@@ -823,11 +844,11 @@ TEST(File, copy_will_return_false_and_do_nothing_if_source_does_not_exist)
     bool actual = file.copy(".FileOps_copy_dest_bad02");
 
     //then we get back false nd the file is not created
-    ASSERT_FALSE(actual);
-    ASSERT_FALSE(filesystem::exists(".FileOps_copy_dest_bad02"));
+    EXPECT_FALSE(actual);
+    EXPECT_FALSE(filesystem::exists(".FileOps_copy_dest_bad02"));
 }
 
-TEST(File, copy_will_recursivly_copy_a_folder)
+TEST(File, copy_will_recursively_copy_a_folder)
 {
     //given we have a directory to copy with files in it
     filesystem::create_directories(".FileOps_copy_folder/sub");
@@ -853,16 +874,16 @@ TEST(File, copy_will_recursivly_copy_a_folder)
     bool actual = file.copy(".FileOps_copy_folder_dest");
 
     //then the whole folder and all files are copied
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/quail.code"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub/txt1"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/quail.brb"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/pickle.jpg"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/quail"));
-    ASSERT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/quail/something.jpg"));
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/quail.code"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub/txt1"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/quail.brb"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/pickle.jpg"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/quail"));
+    EXPECT_TRUE(filesystem::exists(".FileOps_copy_folder_dest/sub1/quail/something.jpg"));
     filesystem::remove_all(".FileOps_copy_folder_dest");
     filesystem::remove_all(".FileOps_copy_folder");
 }
@@ -885,7 +906,7 @@ TEST(File, write_will_return_false_if_the_file_is_a_directory)
     bool actual = file.write("i dunno something");
 
     //Then we get back false
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     filesystem::remove_all(".FileOps_write_directory");
 }
 
@@ -898,9 +919,9 @@ TEST(File, write_will_create_the_file_if_it_does_not_exist)
     bool actual = file.write("Here is a recording of incident SCP-682-5930.");
 
     //Then we get back true and the file is written with the desired contents
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_write_non_existing"));
-    ASSERT_EQ(((File)".FileOps_write_non_existing").read(), "Here is a recording of incident SCP-682-5930.");
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_write_non_existing"));
+    EXPECT_EQ(((File)".FileOps_write_non_existing").read(), "Here is a recording of incident SCP-682-5930.");
     filesystem::remove_all(".FileOps_write_non_existing");
 }
 
@@ -916,11 +937,12 @@ TEST(File, write_will_overwrite_an_existing_file)
     bool actual = file.write("[redacted]");
 
     //Then we get back true and the contents of the file is altered
-    ASSERT_TRUE(actual);
-    ASSERT_EQ(file.read(), "[redacted]");
+    EXPECT_TRUE(actual);
+    EXPECT_EQ(file.read(), "[redacted]");
     filesystem::remove_all(".FileOps_write_existing");
 }
 
+#ifndef WIN32
 TEST(File, write_will_return_false_and_do_nothing_if_we_dont_have_write_permissions)
 {
     //Given we have an existing file with bad permissions
@@ -935,10 +957,11 @@ TEST(File, write_will_return_false_and_do_nothing_if_we_dont_have_write_permissi
 
     //Then we get back false and nothing is changed
     chmod(".FileOps_write_bad_perms", 0x777);
-    ASSERT_FALSE(actual);
-    ASSERT_EQ(file.read(), "this is a recount of the true SCP-001");
+    EXPECT_FALSE(actual);
+    EXPECT_EQ(file.read(), "this is a recount of the true SCP-001");
     filesystem::remove_all(".FileOps_write_bad_perms");
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -958,7 +981,7 @@ TEST(File, append_will_return_false_if_the_file_is_a_directory)
     bool actual = file.append("data");
 
     //Then we get back false
-    ASSERT_FALSE(actual);
+    EXPECT_FALSE(actual);
     filesystem::remove_all(".FileOps_append_directory");
 }
 
@@ -971,9 +994,9 @@ TEST(File, append_will_create_a_file_if_it_does_not_exist)
     bool actual = file.append("[redacted]");
 
     //then we create the file and return true
-    ASSERT_TRUE(actual);
-    ASSERT_TRUE(filesystem::exists(".FileOps_append_non_existing"));
-    ASSERT_EQ(file.read(), "[redacted]");
+    EXPECT_TRUE(actual);
+    EXPECT_TRUE(filesystem::exists(".FileOps_append_non_existing"));
+    EXPECT_EQ(file.read(), "[redacted]");
     filesystem::remove_all(".FileOps_append_non_existing");
 }
 
@@ -989,11 +1012,12 @@ TEST(File, append_will_append_to_an_existing_file)
     bool actual = file.append("SCP-682");
 
     //then we get back true and append the data
-    ASSERT_TRUE(actual);
-    ASSERT_EQ(file.read(), "We will brief you shortly on SCP-682");
+    EXPECT_TRUE(actual);
+    EXPECT_EQ(file.read(), "We will brief you shortly on SCP-682");
     filesystem::remove_all(".FileOps_append_existing");
 }
 
+#ifndef WIN32
 TEST(File, append_will_return_false_and_do_nothing_if_we_do_not_have_write_permission)
 {
     //given we have an existing folder with bad permissions
@@ -1008,10 +1032,11 @@ TEST(File, append_will_return_false_and_do_nothing_if_we_do_not_have_write_permi
 
     //then we get back false and nothing is changed
     chmod(".FileOps_append_bad_perms", 0x777);
-    ASSERT_FALSE(actual);
-    ASSERT_EQ(file.read(), "some text");
+    EXPECT_FALSE(actual);
+    EXPECT_EQ(file.read(), "some text");
     filesystem::remove_all(".FileOps_append_bad_perms");
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1030,7 +1055,7 @@ TEST(File, read_will_return_empty_if_there_is_no_File)
     string output = nonExistingFile.read();
 
     //then we get back a null pointer
-    ASSERT_EQ(output, "");
+    EXPECT_EQ(output, "");
 }
 
 TEST(File, read_will_not_create_file_if_it_does_not_exist)
@@ -1042,7 +1067,7 @@ TEST(File, read_will_not_create_file_if_it_does_not_exist)
     non_existingFile.read();
 
     //then the file does not exist
-    ASSERT_FALSE(filesystem::exists("test.txt"));
+    EXPECT_FALSE(filesystem::exists("test.txt"));
 }
 
 TEST(File, read_will_return_the_data)
@@ -1058,10 +1083,11 @@ TEST(File, read_will_return_the_data)
     string output =  notAFile.read();
 
     //then we get back the contents of the file
-    ASSERT_EQ(output, "class: euclid");
+    EXPECT_EQ(output, "class: euclid");
     filesystem::remove_all(".FileOps_Read_test_temp");
 }
 
+#ifndef WIN32
 TEST(File, read_will_return_empty_if_the_file_has_bad_permissions)
 {
     //given we provide a file with bad read permissions
@@ -1076,11 +1102,12 @@ TEST(File, read_will_return_empty_if_the_file_has_bad_permissions)
     string output =  badPermissionFile.read();
 
     //then we get back the contents of the file
-    ASSERT_EQ(output, "");
+    EXPECT_EQ(output, "");
 
     chmod(".FileOps_Read_test_temp_01/SCP-682.txt", 0x777);
     filesystem::remove_all(".FileOps_Read_test_temp_01");
 }
+#endif
 
 TEST(File, read_will_return_empty_if_the_file_is_a_folder)
 {
@@ -1092,7 +1119,7 @@ TEST(File, read_will_return_empty_if_the_file_is_a_folder)
     string output = file.read();
 
     //then we get back empty
-    ASSERT_EQ(output, "");
+    EXPECT_EQ(output, "");
     filesystem::remove_all(".FileOps_read_directory");
 }
 
@@ -1116,7 +1143,7 @@ TEST(File, readFirstNCharacters_will_only_read_the_first_specified_characters)
     string actual = file.readFirstNCharacters(6);
 
     //then we get back the first 6 characters
-    ASSERT_EQ(actual, "this i");
+    EXPECT_EQ(actual, "this i");
     filesystem::remove_all(".FileOps_ReadNChars_LongFile");
 }
 
@@ -1132,7 +1159,7 @@ TEST(File, readFirstNCharacters_will_only_return_what_is_in_the_file_if_the_file
     string actual = file.readFirstNCharacters(88);
 
     //then we get back what's in the file
-    ASSERT_EQ(actual, "apples");
+    EXPECT_EQ(actual, "apples");
     filesystem::remove_all(".FileOps_ReadNChars_ShortFile");
 }
 
@@ -1148,7 +1175,7 @@ TEST(File, readFirstNCharacters_will_return_whole_file_if_negative_size_is_passe
     string actual = file.readFirstNCharacters(-1);
 
     //then we get back what's in the file
-    ASSERT_EQ(actual, "under no circumstances should SCP-009 breach containment");
+    EXPECT_EQ(actual, "under no circumstances should SCP-009 breach containment");
     filesystem::remove_all(".FileOps_ReadNCharacters_full_file");
 }
 
@@ -1160,6 +1187,7 @@ TEST(File, readFirstNCharacters_will_return_whole_file_if_negative_size_is_passe
 ///////////////////////////////////////File readLastNCharacters tests/////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef WIN32
 TEST(File, readLastNCharacters_will_only_read_the_last_specified_characters)
 {
     //given we have a really, really long file
@@ -1172,9 +1200,26 @@ TEST(File, readLastNCharacters_will_only_read_the_last_specified_characters)
     string actual = file.readLastNCharacters(6);
 
     //then we get back the last 6 characters
-    ASSERT_EQ(actual, "there\n");
+    EXPECT_EQ(actual, "here\r\n");
     filesystem::remove_all(".FileOps_ReadLastNChars_LongFile");
 }
+#else
+TEST(File, readLastNCharacters_will_only_read_the_last_specified_characters)
+{
+    //given we have a really, really long file
+    ofstream longFile(".FileOps_ReadLastNChars_LongFile");
+    longFile << "this is a very long file\n with some file breaks here and there\n";
+    longFile.close();
+    File file = ".FileOps_ReadLastNChars_LongFile";
+
+    //when we read the last n bytes
+    string actual = file.readLastNCharacters(6);
+
+    //then we get back the last 6 characters
+    EXPECT_EQ(actual, "there\n");
+    filesystem::remove_all(".FileOps_ReadLastNChars_LongFile");
+}
+#endif
 
 TEST(File, readLastNCharacters_will_only_return_what_is_in_the_file_if_the_file_is_too_small)
 {
@@ -1188,7 +1233,7 @@ TEST(File, readLastNCharacters_will_only_return_what_is_in_the_file_if_the_file_
     string actual = file.readLastNCharacters(88);
 
     //then we get back what's in the file
-    ASSERT_EQ(actual, "apples");
+    EXPECT_EQ(actual, "apples");
     filesystem::remove_all(".FileOps_ReadLastNChars_ShortFile");
 }
 
@@ -1204,7 +1249,7 @@ TEST(File, readLastNCharacters_will_return_whole_file_if_negative_size_is_passed
     string actual = file.readLastNCharacters(-1);
 
     //then we get back what's in the file
-    ASSERT_EQ(actual, "under no circumstances should SCP-009 breach containment");
+    EXPECT_EQ(actual, "under no circumstances should SCP-009 breach containment");
     filesystem::remove_all(".FileOps_ReadLastNCharacters_full_file");
 }
 
@@ -1225,7 +1270,7 @@ TEST(File, getPath_returns_the_whole_path_pointed_to_by_the_file)
     string filePath = file.getPath();
 
     //then we get back the path
-    ASSERT_EQ(filePath, "some/path");
+    EXPECT_EQ(filePath, "some/path");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1245,7 +1290,7 @@ TEST(File, getExtension_will_return_the_extension_of_the_provided_file)
     string extension = file.getExtension();
 
     //then we get back the extension
-    ASSERT_EQ(extension, ".txt");
+    EXPECT_EQ(extension, ".txt");
 }
 
 TEST(File, getExtension_will_not_get_confused_by_multiple_periods_in_file_name)
@@ -1257,7 +1302,7 @@ TEST(File, getExtension_will_not_get_confused_by_multiple_periods_in_file_name)
     string extension = file.getExtension();
 
     //then we get back the extension
-    ASSERT_EQ(extension, ".bob");
+    EXPECT_EQ(extension, ".bob");
 }
 
 TEST(File, getExtension_will_return_empty_string_if_there_is_no_extension)
@@ -1269,7 +1314,7 @@ TEST(File, getExtension_will_return_empty_string_if_there_is_no_extension)
     string extension = file.getExtension();
 
     //then we get back an empty string
-    ASSERT_EQ(extension, "");
+    EXPECT_EQ(extension, "");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1289,7 +1334,7 @@ TEST(File, getNameWithoutExtension_will_get_the_name_of_the_file_without_a_path_
     string name = file.getNameWithoutExtension();
 
     //then we get back the name of the file
-    ASSERT_EQ(name, "SCP-096");
+    EXPECT_EQ(name, "SCP-096");
 }
 
 TEST(File, getNameWithoutExtension_will_not_get_confused_by_multiple_periods_in_file_name)
@@ -1301,7 +1346,7 @@ TEST(File, getNameWithoutExtension_will_not_get_confused_by_multiple_periods_in_
     string name = file.getNameWithoutExtension();
 
     //then we get back the name of the file
-    ASSERT_EQ(name, "SCP-000.1.345.delete_this");
+    EXPECT_EQ(name, "SCP-000.1.345.delete_this");
 }
 
 TEST(File, getNameWithoutExtension_will_get_the_name_of_a_file_that_does_not_have_an_extension)
@@ -1313,7 +1358,7 @@ TEST(File, getNameWithoutExtension_will_get_the_name_of_a_file_that_does_not_hav
     string name = file.getNameWithoutExtension();
 
     //then we get back the name of the file
-    ASSERT_EQ(name, "records");
+    EXPECT_EQ(name, "records");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1340,11 +1385,11 @@ TEST(File, list_will_list_all_files_in_a_directory)
     unordered_set<string> actual = file.list();
 
     //then we get back a list of files
-    ASSERT_EQ(actual, (unordered_set<string>{".FileOps_list_folder/sub", ".FileOps_list_folder/sub1/quail",
-                                             ".FileOps_list_folder/sub/txt1", ".FileOps_list_folder/quail.code",
-                                             ".FileOps_list_folder/sub1/quail.brb", ".FileOps_list_folder/sub1/pickle.jpg",
-                                             ".FileOps_list_folder/sub1/quail/something.jpg", ".FileOps_list_folder",
-                                             ".FileOps_list_folder/sub1"}));
+    EXPECT_EQ(actual, (unordered_set<string>{".FileOps_list_folder" fileSeparator "sub", ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail",
+                                             ".FileOps_list_folder" fileSeparator "sub" fileSeparator "txt1", ".FileOps_list_folder" fileSeparator "quail.code",
+                                             ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail.brb", ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "pickle.jpg",
+                                             ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail" fileSeparator "something.jpg", ".FileOps_list_folder",
+                                             ".FileOps_list_folder" fileSeparator "sub1"}));
     filesystem::remove_all(".FileOps_list_folder");
 }
 
@@ -1362,11 +1407,11 @@ TEST(File, list_will_run_a_function_on_each_path_if_provided)
     File file = ".FileOps_list_folder_01";
 
     //when we try to list the files and pass in a function
-    file.list([&fileNames](const string& path){fileNames.insert(path.substr(path.find_last_of('/')));});
+    file.list([&fileNames](const string& path){fileNames.insert(path.substr(path.find_last_of(fileSeparator)));});
 
     //then we execute the function on each file
-    ASSERT_EQ(fileNames, (unordered_set<string>{"/sub", "/quail", "/txt1", "/quail.code", "/quail.brb", "/pickle.jpg",
-                                                "/something.jpg", "/sub1"}));
+    EXPECT_EQ(fileNames, (unordered_set<string>{fileSeparator "sub", fileSeparator "quail", fileSeparator "txt1", fileSeparator "quail.code", fileSeparator "quail.brb",
+                                                fileSeparator "pickle.jpg", fileSeparator "something.jpg", fileSeparator "sub1"}));
     filesystem::remove_all(".FileOps_list_folder_01");
 }
 
@@ -1379,7 +1424,7 @@ TEST(File , list_will_return_an_empty_list_if_the_file_does_not_exist)
     unordered_set<string> actual = file.list();
 
     //then we get back an empty list
-    ASSERT_EQ(actual, (unordered_set<string>{}));
+    EXPECT_EQ(actual, (unordered_set<string>{}));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

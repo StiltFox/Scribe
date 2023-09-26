@@ -72,10 +72,17 @@ rm -rf * # DANGER be sure you are in the build directory
 # If you just wish to install the library without running the tests
 # you can specify the -DSFSkipTesting=true option. Just like
 # in the Linux build.
-cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/windows.toolchain -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/windows.toolchain -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ -DCMAKE_BUILD_TYPE=Release -G Ninja ..
 cmake --build .
 cmake --install .
 ```
+
+#### Running the Windows Tests
+Because these directions produce a windows executable, Linux cannot execute the compiled tests directly. Instead they need to be run using wine. Wine can be activated from the command line using something like:\
+`wine <path to program>`\
+for an example please checkout the [helper scripts](helper_scripts).\
+to install wine on your system do the following:\
+`sudo apt install wine`
 
 ## Linking to Stilt Fox&trade; Scribe
 Linking to Stilt Fox&trade; scribe is easy. In your CMakeLists.txt file include the following line:\
@@ -88,3 +95,7 @@ modules. This allows you to include only what you need in your build.
 ## Tutorials and Examples
 If you want to see the classes of Stilt Fox&trade; Scribe, feel free to check out the [test folder](test). All public methods
 are thoroughly unit tested, and also demonstrate intended usage of the classes.
+
+## Helper Scripts
+Due to the complexity of compiling for multiple systems, a .sh file was created for each tested system to simply run the unit tests. If all prerequisites are installed, these scripts should run without error. They use relative paths so caution should be used when executing them. Be sure to execute them from the project root like so:\
+`./helper_scripts/linux_run_tests.sh`
