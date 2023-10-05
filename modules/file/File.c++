@@ -30,22 +30,22 @@ File& File::operator=(string filePath)
     return *this;
 }
 
-string File::getPath()
+string File::getPath() const
 {
     return path;
 }
 
-string File::getExtension()
+string File::getExtension() const
 {
     return ((filesystem::path) path).extension().string();
 }
 
-string File::getNameWithoutExtension()
+string File::getNameWithoutExtension() const
 {
     return ((filesystem::path) path).stem().string();
 }
 
-unordered_set<string> File::list()
+unordered_set<string> File::list() const
 {
     return list(nullptr);
 }
@@ -133,7 +133,7 @@ bool File::copy(const string& copyTo)
 }
 #else
 
-unordered_set<string> File::list(const function<void(const string&)>& performOnEach)
+unordered_set<string> File::list(const function<void(const string&)>& performOnEach) const
 {
     unordered_set<string> output;
 
@@ -150,17 +150,17 @@ unordered_set<string> File::list(const function<void(const string&)>& performOnE
     return output;
 }
 
-bool File::canWrite()
+bool File::canWrite() const
 {
     return access(path.c_str(), W_OK) == 0 || errno != EACCES;
 }
 
-bool File::canRead()
+bool File::canRead() const
 {
     return access(path.c_str(), R_OK) == 0 || errno != EACCES && errno != ENOENT;
 }
 
-bool File::canExecute()
+bool File::canExecute() const
 {
     return access(path.c_str(), X_OK) == 0 || errno != EACCES && errno != ENOENT;
 }
@@ -171,7 +171,7 @@ bool File::remove()
     return !exists();
 }
 
-bool File::copy(const string& copyTo)
+bool File::copy(const string& copyTo) const
 {
     File dest = copyTo;
     bool canCopy = exists() && canRead() && dest.canWrite();
@@ -209,7 +209,7 @@ void File::createParentPath()
     if (pth.has_parent_path()) filesystem::create_directories(pth.parent_path().c_str());
 }
 
-bool File::exists()
+bool File::exists() const
 {
     return access(path.c_str(), F_OK) == 0 && canRead();
 }
@@ -232,7 +232,7 @@ bool File::mkdir()
     return exists() && isDirectory();
 }
 
-bool File::isDirectory()
+bool File::isDirectory() const
 {
     return canRead() && filesystem::is_directory(path);
 }
@@ -248,7 +248,7 @@ inline int getFileSize(const string& path)
     return output;
 }
 
-int File::getSize()
+int File::getSize() const
 {
     int output = -1;
 
@@ -298,12 +298,12 @@ bool File::append(const string& toWrite)
     return output;
 }
 
-string File::read()
+string File::read() const
 {
     return readFirstNCharacters(-1);
 }
 
-string File::readFirstNCharacters(int numChars)
+string File::readFirstNCharacters(int numChars) const
 {
     string output;
 
@@ -331,7 +331,7 @@ string File::readFirstNCharacters(int numChars)
     return output;
 }
 
-string File::readLastNCharacters(int numChars)
+string File::readLastNCharacters(int numChars) const
 {
     string output;
 
