@@ -7,7 +7,7 @@ using namespace std;
 using namespace StiltFox::Scribe;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////Buffered File initalization tests/////////////////////////////////////////////////////////
+////////////////////////////////////Buffered File initialization tests////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 TEST(BufferedFile, initalizing_a_buffered_file_will_read_the_contents_of_the_current_file_into_the_buffer)
@@ -98,14 +98,15 @@ TEST(BufferedFile, append_will_append_to_buffer_but_not_write_to_file)
     //given we have a file
     ofstream initialFile(".bufferedFile_temp_04");
     initialFile << "鬣狼\n";
+    initialFile.close();
     BufferedFile file = ".bufferedFile_temp_04";
 
     //when we append to the file
     file.append("is majestic.");
 
     //then we append the text to the buffer and the file is not effected
-    EXPECT_EQ(file.read(), "鬣狼");
-    EXPECT_EQ(file.getBuffer(), "鬣狼\nis majestic");
+    EXPECT_EQ(file.read(), "鬣狼\n");
+    EXPECT_EQ(file.getBuffer(), "鬣狼\nis majestic.");
     filesystem::remove_all(".bufferedFile_temp_04");
 }
 
@@ -150,10 +151,43 @@ TEST(BufferedFile, save_will_write_the_buffer_to_the_underlying_file)
 
     //when we modify the buffer then save
     file.write("鬣狼");
+    file.save();
 
     //then the buffer is written to the file
     EXPECT_EQ(file.read(), "鬣狼");
     filesystem::remove_all("bufferedFile_temp_07");
+}
+
+TEST(BufferedFile, save_will_overwrite_an_existing_file)
+{
+    //given we have an existing file with data in it
+    ofstream existingFile(".bufferedFile_temp_08");
+    existingFile << "testing data goes here";
+    existingFile.close();
+    BufferedFile file = ".bufferedFile_temp_08";
+
+    //when we modify the buffer then save
+    file.write("野生の鬣狼は林檎を戦っている！");
+    file.save();
+
+    //then we overwrite the existing file
+    EXPECT_EQ(file.read(), "野生の鬣狼は林檎を戦っている！");
+    filesystem::remove_all(".bufferedFile_temp_08");
+}
+
+TEST(BufferedFile, save_will_create_the_file_if_it_does_not_exist)
+{
+    //given we have a file that does not exist
+    BufferedFile file = ".bufferedFile_temp_09";
+
+    //when we modify the buffer then save
+    file.write("鬣狼は林檎を食べたろか？！？！");
+    file.save();
+
+    //then the file is created with the desired data
+    EXPECT_TRUE(file.exists());
+    EXPECT_EQ(file.read(), "鬣狼は林檎を食べたろか？！？！");
+    filesystem::remove_all(".bufferedFile_temp_09");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

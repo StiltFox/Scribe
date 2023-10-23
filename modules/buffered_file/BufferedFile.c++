@@ -18,10 +18,16 @@ bool BufferedFile::write(const std::string& toWrite)
 
 bool BufferedFile::append(const std::string& toAppend)
 {
-    return false;
+    buffer += toAppend;
+    return true;
 }
 
 std::string BufferedFile::getBuffer()
 {
     return buffer;
+}
+
+bool BufferedFile::save()
+{
+    return File::write(buffer);
 }
