@@ -51,7 +51,7 @@ unordered_set<string> File::list() const
 }
 
 #ifdef WIN32
-unordered_set<string> File::list(const function<void(const string&)>& performOnEach)
+unordered_set<string> File::list(const function<void(const string&)>& performOnEach) const
 {
     unordered_set<string> output;
 
@@ -72,17 +72,17 @@ unordered_set<string> File::list(const function<void(const string&)>& performOnE
     return output;
 }
 
-bool File::canWrite()
+bool File::canWrite() const
 {
     return true;
 }
 
-bool File::canRead()
+bool File::canRead() const
 {
     return true;
 }
 
-bool File::canExecute()
+bool File::canExecute() const
 {
     return true;
 }
@@ -100,7 +100,7 @@ bool File::remove()
     return !exists();
 }
 
-bool File::copy(const string& copyTo)
+bool File::copy(const string& copyTo) const
 {
     File dest = copyTo;
     bool canCopy = exists() && canRead() && dest.canWrite();

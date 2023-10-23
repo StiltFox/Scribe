@@ -97,7 +97,7 @@ TEST(BufferedFile, append_will_append_to_buffer_but_not_write_to_file)
 {
     //given we have a file
     ofstream initialFile(".bufferedFile_temp_04");
-    initialFile << "鬣狼\n";
+    initialFile << "鬣狼 ";
     initialFile.close();
     BufferedFile file = ".bufferedFile_temp_04";
 
@@ -105,8 +105,8 @@ TEST(BufferedFile, append_will_append_to_buffer_but_not_write_to_file)
     file.append("is majestic.");
 
     //then we append the text to the buffer and the file is not effected
-    EXPECT_EQ(file.read(), "鬣狼\n");
-    EXPECT_EQ(file.getBuffer(), "鬣狼\nis majestic.");
+    EXPECT_EQ(file.read(), "鬣狼 ");
+    EXPECT_EQ(file.getBuffer(), "鬣狼 is majestic.");
     filesystem::remove_all(".bufferedFile_temp_04");
 }
 
