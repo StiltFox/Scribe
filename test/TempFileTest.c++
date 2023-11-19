@@ -11,7 +11,7 @@ TEST(TemporaryFile, TemporaryFile_will_create_the_requested_file)
     TemporaryFile temp = ".temp_file_00";
 
     //then the file will exist on the system
-    ASSERT_TRUE(filesystem::exists(".temp_file_00"));
+    EXPECT_TRUE(filesystem::exists(".temp_file_00"));
 }
 
 TEST(TemporaryFile, TemporaryFile_will_delete_the_file_on_deconstruction)
@@ -23,5 +23,5 @@ TEST(TemporaryFile, TemporaryFile_will_delete_the_file_on_deconstruction)
     delete temp;
 
     //then the temporary file does not exist anymore
-    ASSERT_FALSE(filesystem::exists(".temp_file_01"));
+    EXPECT_FALSE(filesystem::exists(".temp_file_01"));
 }

@@ -1,2 +1,3 @@
 add_subdirectory(file)
 add_subdirectory(tempfile)
+add_subdirectory(buffered_file)
