@@ -8,6 +8,8 @@ target_link_libraries(Tests GTest::gtest_main
         BufferedFile
 )
 
-target_link_options(Tests PUBLIC -static -static-libgcc -static-libstdc++)
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+ target_link_options(Tests PUBLIC -static -static-libgcc -static-libstdc++)
+endif ()
 
 gtest_discover_tests(Tests)
