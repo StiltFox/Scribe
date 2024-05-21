@@ -1,11 +1,14 @@
 add_executable(Tests FileTest.c++
         TempFileTest.c++
-        BufferedFileTest.c++)
+        BufferedFileTest.c++
+        ConfigFileTest.c++
+)
 
 target_link_libraries(Tests GTest::gtest_main
         File
         TempFile
         BufferedFile
+        ConfigFile
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)

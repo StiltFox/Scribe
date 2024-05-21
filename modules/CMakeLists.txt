@@ -1,3 +1,4 @@
 add_subdirectory(file)
 add_subdirectory(tempfile)
 add_subdirectory(buffered_file)
+add_subdirectory(config_file)

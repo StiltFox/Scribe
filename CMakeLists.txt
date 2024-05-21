@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(Scribe VERSION 1.1.0)
+project(Scribe VERSION 1.2.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -28,7 +28,7 @@ install(FILES
 )
 
 install(
-        TARGETS File TempFile BufferedFile
+        TARGETS File TempFile BufferedFile ConfigFile
         EXPORT Scribe
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/Scribe
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/Scribe
