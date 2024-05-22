@@ -3,15 +3,25 @@
 using namespace std;
 using namespace StiltFox::Scribe;
 
-TemporaryFile::TemporaryFile(const char* filePath, string data, filesystem::perms permissions) : File(filePath)
+TemporaryFile::TemporaryFile(const char* filePath, bool isDir, const string& data, filesystem::perms permissions) : File(filePath)
 {
     if (exists()) remove();
-    touch();
+    if (isDir)
+    {
+        mkdir();
+    }
+    else
+    {
+        touch();
+        File::write(data);
+    }
     filesystem::permissions(filePath, permissions, filesystem::perm_options::replace);
-    write(data);
 }
 
-TemporaryFile::TemporaryFile(string filePath, string data, filesystem::perms permissions) : TemporaryFile(filePath.c_str(), data, permissions) {}
+TemporaryFile::TemporaryFile(const char* path, bool isDir, filesystem::perms permissions) : TemporaryFile(path, isDir, "", permissions){}
+TemporaryFile::TemporaryFile(const string& path, bool isDir, filesystem::perms permissions) : TemporaryFile(path.c_str(), isDir, "", permissions){}
+TemporaryFile::TemporaryFile(const char* path, const char* data, filesystem::perms permissions) : TemporaryFile(path, false, data, permissions){}
+TemporaryFile::TemporaryFile(const string& path, const string& data, filesystem::perms permissions) : TemporaryFile(path.c_str(), false, data, permissions){}
 
 TemporaryFile::~TemporaryFile()
 {
