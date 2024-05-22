@@ -1,20 +1,20 @@
-# Stilt Fox&trade; Scribe
-Stilt Fox&trade; scribe is a C++ library designed to make dealing with files and other related IO tasks easier. This convenience
-library used to be a part of Stilt Fox&trade; universal library, however was split into its own repository for better maintainability.
+# Stilt Fox&reg; Scribe
+Stilt Fox&reg; scribe is a C++ library designed to make dealing with files and other related IO tasks easier. This convenience
+library used to be a part of Stilt Fox&reg; universal library, however was split into its own repository for better maintainability.
 This Library won't be updated often as well, reading a file doesn't change often. So unless a bug is discovered, or new functionality
 is required, this library should stay rather static.
 
 ## Legal Stuff
-Stilt Fox&trade; is not liable for any damages done to your hardware. For more information see LICENSE file.\
-Stilt Fox&trade; is trademarked. You may not use the Stilt Fox™ name, however this code is free to reference and use.\
-You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&trade; owns the copyright for any contributions.
+Stilt Fox&reg; is not liable for any damages done to your hardware. For more information see LICENSE file.\
+Stilt Fox&reg; is trademarked. You may not use the Stilt Fox™ name, however this code is free to reference and use.\
+You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&reg; owns the copyright for any contributions.
 
 ## Prerequisites
 - CMake
   - version 3.0.0 or greater
 - C++ compiler
   - must support C++ version 20 or higher
-  - We at Stilt Fox&trade; tend to use g++
+  - We at Stilt Fox&reg; tend to use g++
 - GTests
   - This is only required for unit testing, and can be skipped
     - To skip, use the `SFSkipTesting=true` option when compiling
@@ -69,7 +69,7 @@ Because we are running on Linux, by default only the Linux binaries for the GTes
  cmake --install .
  ```
 
-#### Compiling and Installing Stilt Fox&trade; Scribe for Windows
+#### Compiling and Installing Stilt Fox&reg; Scribe for Windows
 ```bash
 mkdir build
 cd build
@@ -92,8 +92,8 @@ to install wine on your system do the following:\
 *note*: Windows does not include the libgcc.dll libraries by  default. This can be resolved by statically linking libgcc or
 by distributing the required DLLs with your code.
 
-## Linking to Stilt Fox&trade; Scribe
-Linking to Stilt Fox&trade; scribe is easy. In your CMakeLists.txt file include the following line:\
+## Linking to Stilt Fox&reg; Scribe
+Linking to Stilt Fox&reg; scribe is easy. In your CMakeLists.txt file include the following line:\
 `find_package(Scribe)`\
 then to link to your project use the following line:\
 `target_link_libraries(MyProject StiltFox::Scribe::File StiltFox::Scribe::TempFile)`\
@@ -101,7 +101,7 @@ please notice that each module you want to link must be linked separately as sho
 modules. This allows you to include only what you need in your build.
 
 ## Tutorials and Examples
-If you want to see the classes of Stilt Fox&trade; Scribe, feel free to check out the [test folder](test). All public methods
+If you want to see the classes of Stilt Fox&reg; Scribe, feel free to check out the [test folder](test). All public methods
 are thoroughly unit tested, and also demonstrate intended usage of the classes.
 
 ## Helper Scripts
