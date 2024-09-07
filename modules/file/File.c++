@@ -139,11 +139,13 @@ unordered_set<string> File::list(const function<void(const string&)>& performOnE
 
     if (exists())
     {
-        output.insert(path);
-        for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+        if (isDirectory())
         {
-            if (performOnEach != nullptr) performOnEach(dir_entry.path());
-            output.insert(dir_entry.path());
+            for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+            {
+                if (performOnEach != nullptr) performOnEach(dir_entry.path());
+                output.insert(dir_entry.path());
+            }
         }
     }
 

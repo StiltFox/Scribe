@@ -1388,7 +1388,7 @@ TEST(File, list_will_list_all_files_in_a_directory)
     EXPECT_EQ(actual, (unordered_set<string>{".FileOps_list_folder" fileSeparator "sub", ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail",
                                              ".FileOps_list_folder" fileSeparator "sub" fileSeparator "txt1", ".FileOps_list_folder" fileSeparator "quail.code",
                                              ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail.brb", ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "pickle.jpg",
-                                             ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail" fileSeparator "something.jpg", ".FileOps_list_folder",
+                                             ".FileOps_list_folder" fileSeparator "sub1" fileSeparator "quail" fileSeparator "something.jpg",
                                              ".FileOps_list_folder" fileSeparator "sub1"}));
     filesystem::remove_all(".FileOps_list_folder");
 }
@@ -1425,6 +1425,20 @@ TEST(File , list_will_return_an_empty_list_if_the_file_does_not_exist)
 
     //then we get back an empty list
     EXPECT_EQ(actual, (unordered_set<string>{}));
+}
+
+TEST(File, list_will_return_an_empty_set_if_the_file_is_not_a_direcctory)
+{
+    //given we have a file that is not a directory
+    ofstream(".52806336-61e0-48c3-8611-7ec9f7f614f5").close();
+    const File file = ".52806336-61e0-48c3-8611-7ec9f7f614f5";
+
+    //when we try to list the sub directories and files
+    auto actual = file.list();
+
+    //then we get back a list of just the file name
+    EXPECT_EQ(actual, (unordered_set<string>{}));
+    filesystem::remove_all(".52806336-61e0-48c3-8611-7ec9f7f614f5");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
