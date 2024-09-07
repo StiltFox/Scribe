@@ -57,16 +57,19 @@ unordered_set<string> File::list(const function<void(const string&)>& performOnE
 
     if (exists())
     {
-        output.insert(path);
-        for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+        if (isDirectory())
         {
-            using convert_type = std::codecvt_utf8<wchar_t>;
-            std::wstring_convert<convert_type, wchar_t> converter;
+            for (auto const& dir_entry : filesystem::recursive_directory_iterator(path))
+            {
+                using convert_type = std::codecvt_utf8<wchar_t>;
+                std::wstring_convert<convert_type, wchar_t> converter;
 
-            string dirPath = converter.to_bytes(dir_entry.path().native());
-            if (performOnEach != nullptr) performOnEach(dirPath);
-            output.insert(dirPath);
+                string dirPath = converter.to_bytes(dir_entry.path().native());
+                if (performOnEach != nullptr) performOnEach(dirPath);
+                output.insert(dirPath);
+            }
         }
+
     }
 
     return output;
