@@ -25,6 +25,9 @@ TemporaryFile::TemporaryFile(const string& path, const string& data, filesystem:
 
 TemporaryFile::~TemporaryFile()
 {
-    filesystem::permissions(getPath(),filesystem::perms::all,filesystem::perm_options::replace);
-    if (exists()) remove();
+    if (exists())
+    {
+        permissions(getPath(),filesystem::perms::all,filesystem::perm_options::replace);
+        remove();
+    }
 }
