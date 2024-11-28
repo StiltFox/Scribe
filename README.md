@@ -15,12 +15,10 @@ You may contribute to this library, however all contributions will share the sam
 - C++ compiler
   - must support C++ version 20 or higher
   - We at Stilt Fox&reg; tend to use g++
-- GTests
+- GTest
   - This is only required for unit testing, and can be skipped
     - To skip, use the `SFSkipTesting=true` option when compiling
-  - You can obtain GTest by using `sudo apt install libgtest-dev`
-    - if you are not running debian based linux, or are allergic to apt... it can be found [here](https://github.com/google/googletest)
-    - arch linux can install via `sudo pacman -S gtest`
+  - GTest should be downloaded by FetchContent in CMake
 
 ## Installation
 The following commands will install the libraries to your system. These will exist globally to all users. If you wish to
