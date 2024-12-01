@@ -1,6 +1,5 @@
 #ifndef StiltFox_SCRIBE_MODULES_CONFIG_FILE_CONFIGFILE_H
 #define StiltFox_SCRIBE_MODULES_CONFIG_FILE_CONFIGFILE_H
-#include <memory>
 #include "File.h++"
 
 namespace StiltFox::Scribe::Configuration

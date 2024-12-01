@@ -18,7 +18,12 @@ You may contribute to this library, however all contributions will share the sam
 - GTest
   - This is only required for unit testing, and can be skipped
     - To skip, use the `SFSkipTesting=true` option when compiling
-  - GTest should be downloaded by FetchContent in CMake
+  - Download and install GTest in the way that's best for your computer
+    - Arch: `sudo pacman -S`
+    - Ubuntu: `sudo apt install libgtest-dev`
+      - This command no longer seems to be enough on its own.
+      - This package may still need to be compiled using CMake
+      - It is recommended that you go [here](https://github.com/google/googletest) and follow the build instructions
 
 ## Installation
 The following commands will install the libraries to your system. These will exist globally to all users. If you wish to
