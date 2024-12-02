@@ -17,8 +17,8 @@ TEST(ConfigFile, getConfigurationFile_Will_return_a_file_that_points_to_the_prop
 
     //then we get back a file that points to the desired configuration file
 #ifdef win32
-    EXPECT_EQ(actual.getPath(), "%appdata%\\StiltFox\\Scribe\\startup.cfg");
+    EXPECT_EQ(actual.getPath(), static_cast<std::string>(getenv("USERPROFILE")) + "\\AppData\\Roaming\\StiltFox\\Scribe\\startup.cfg");
 #else
-    EXPECT_EQ(actual.getPath(), "~/.config/StiltFox/Scribe/startup.cfg");
+    EXPECT_EQ(actual.getPath(), static_cast<std::string>(getenv("HOME")) + "/.config/StiltFox/Scribe/startup.cfg");
 #endif
 }

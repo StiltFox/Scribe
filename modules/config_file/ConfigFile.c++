@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "ConfigFile.h++"
 
 using namespace std;
